@@ -33,6 +33,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$rootProject.ext.compatLibVersion"
     implementation "androidx.core:core-ktx:$rootProject.ext.ktxCoreVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.ext.constraintLayoutVersion"
     implementation "androidx.legacy:legacy-support-v4:$rootProject.ext.legacySupportVersion"
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
