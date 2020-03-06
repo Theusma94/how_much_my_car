@@ -1,14 +1,17 @@
 package com.theusmadev.howmuchmycar.ui.main
 
 import android.os.Bundle
-import androidx.appcompat.app.ActionBarDrawerToggle
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.theusmadev.howmuchmycar.R
 import com.theusmadev.howmuchmycar.BR
 import com.theusmadev.howmuchmycar.databinding.ActivityMainBinding
 import com.theusmadev.howmuchmycar.di.factory.ViewModelProviderFactory
-import kotlinx.android.synthetic.main.activity_main.*
 import com.theusmadev.howmuchmycar.ui.base.BaseActivity
+import com.theusmadev.howmuchmycar.utils.NetworkState
+import com.theusmadev.howmuchmycar.utils.insertOnStart
 import javax.inject.Inject
 
 class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
@@ -26,7 +29,53 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = getViewDataBinding()
-        text_sample.text = "How Much my car?"
+        mainViewModel.startFetchBrands()
+        setupObserver()
+    }
+
+    private fun setupObserver() {
+        mainViewModel.resultBrands.observe(this, Observer {
+            when(it.status) {
+                    NetworkState.SUCCESS -> {
+                        activityMainBinding.brands = it.data?.items?.insertOnStart("Select a Brand")
+                        activityMainBinding.spinnerModels.setSelection(0)
+                    }
+                    NetworkState.LOADING -> {
+                        Toast.makeText(this, "Loading Brands", Toast.LENGTH_LONG).show()
+                    }
+                    NetworkState.ERROR -> {
+                        Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
+                    }
+                }
+        })
+        mainViewModel.resultModels.observe(this, Observer {
+            when(it.status) {
+                NetworkState.SUCCESS -> {
+                    activityMainBinding.models = it.data?.items?.insertOnStart("Select a Model")
+                    activityMainBinding.spinnerModels.setSelection(0)
+                }
+                NetworkState.LOADING -> {
+                    Toast.makeText(this, "Loading Models", Toast.LENGTH_LONG).show()
+                }
+                NetworkState.ERROR -> {
+                    Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+        mainViewModel.resultYears.observe(this, Observer {
+            when(it.status) {
+                NetworkState.SUCCESS -> {
+                    activityMainBinding.years = it.data?.items?.insertOnStart("Select a year")
+                    activityMainBinding.spinnerYears.setSelection(0)
+                }
+                NetworkState.LOADING -> {
+                    Toast.makeText(this, "Loading Years", Toast.LENGTH_LONG).show()
+                }
+                NetworkState.ERROR -> {
+                    Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
+                }
+            }
+        })
     }
 
     override fun getLayoutId(): Int = R.layout.activity_main
