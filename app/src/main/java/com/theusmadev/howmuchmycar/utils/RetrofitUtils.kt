@@ -8,6 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitUtils {
+    private const val DEFAULT_TIMEOUT = 60
+
     fun generateRetrofitBuilder(
         okHttpClient: OkHttpClient
     ): Retrofit {
@@ -23,9 +25,9 @@ object RetrofitUtils {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(logging)
-            .connectTimeout(Constants.DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(Constants.DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .readTimeout(Constants.DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
             .build()
     }
 }
