@@ -1,11 +1,10 @@
 package com.theusmadev.howmuchmycar.data.remote
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.liveData
 import com.theusmadev.howmuchmycar.data.CarInfoService
-import com.theusmadev.howmuchmycar.data.model.BrandsResponse
-import com.theusmadev.howmuchmycar.data.model.ModelResponse
-import com.theusmadev.howmuchmycar.data.model.YearsResponse
+import com.theusmadev.howmuchmycar.data.model.*
 import com.theusmadev.howmuchmycar.utils.ResultFetch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -82,6 +81,44 @@ class CarRepository(private val carInfoService: CarInfoService) {
             } else ResultFetch.error(response.code().toString(),null)
         } catch (e: IOException) {
             ResultFetch.error(e.message!!,null);
+        }
+    }
+
+    fun getCars(brand: String,model: String,year: String): LiveData<ResultFetch<List<CarInfoResponse>>> {
+        return liveData {
+            emit(ResultFetch.loading(null))
+            try {
+                val versionsIds = fetchVersionsIds(brand,model,year)
+                emit(fetchCars(brand,model,year,versionsIds))
+            } catch (exception: Exception) {
+                emit(ResultFetch.error(exception.message!!,null))
+            }
+        }
+    }
+
+    private suspend fun fetchCars(brand: String, model: String, year: String,versionsIds: List<VersionIdResponse>?): ResultFetch<List<CarInfoResponse>> {
+        val listOfCars = mutableListOf<CarInfoResponse>()
+        return try {
+            for(versionId in versionsIds!!) {
+                val response = withContext(Dispatchers.IO) { carInfoService.getCarInfos(brand,model,year,versionId.versionId).execute() }
+                if (response.isSuccessful) {
+                    listOfCars.add(response.body()!!)
+                }
+            }
+            ResultFetch.success(listOfCars)
+        } catch (e: IOException) {
+            ResultFetch.error(e.message!!,null);
+        }
+    }
+
+    private suspend fun fetchVersionsIds(brand: String, model: String, year: String): List<VersionIdResponse>? {
+        return try {
+            val response = withContext(Dispatchers.IO) { carInfoService.getVersionsIDs(brand, model, year).execute() }
+            if(response.isSuccessful) {
+                response.body()
+            } else throw IOException()
+        } catch (e: IOException) {
+            throw IOException(e)
         }
     }
 }

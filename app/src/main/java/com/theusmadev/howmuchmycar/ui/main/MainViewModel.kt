@@ -14,11 +14,12 @@ class MainViewModel @Inject constructor(val carRepository: CarRepository): ViewM
     private val isNeedToFetchBrands: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchModels: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchYears: MutableLiveData<Boolean> = MutableLiveData()
+    private val isNeedToFetchCars: MutableLiveData<Boolean> = MutableLiveData()
     private var brand: String = ""
     private var model: String = ""
     private var year: String = ""
 
-    fun c(brandSelected: View, position: Int, spinnerModels: Spinner,spinnerYears: Spinner ) {
+    fun setBrandSelected(brandSelected: View, position: Int, spinnerModels: Spinner,spinnerYears: Spinner ) {
         if(position > 0) {
             spinnerModels.adapter = null
             spinnerYears.adapter = null
@@ -32,32 +33,47 @@ class MainViewModel @Inject constructor(val carRepository: CarRepository): ViewM
             startFetchYears()
         }
     }
+    fun setYearSelected(yearSelected: View, position: Int) {
+        if(position > 0) {
+            year = (yearSelected as TextView).text.toString()
+        }
+    }
+
+    fun onClickSearchButton() {
+        isNeedToFetchCars.value = true
+    }
 
     fun startFetchBrands() {
         isNeedToFetchBrands.value = true
     }
 
-    fun startFetchModels() {
+    private fun startFetchModels() {
         isNeedToFetchModels.value = true
     }
 
-    fun startFetchYears() {
+    private fun startFetchYears() {
         isNeedToFetchYears.value = true
     }
 
-    val resultBrands = isNeedToFetchBrands.switchMap { it ->
+    val resultBrands = isNeedToFetchBrands.switchMap {
         if(it) {
             carRepository.getBrands()
         } else AbsentLiveData.create()
     }
-    val resultModels = isNeedToFetchModels.switchMap { it ->
+    val resultModels = isNeedToFetchModels.switchMap {
         if(it) {
             carRepository.getModels(brand)
         } else AbsentLiveData.create()
     }
-    val resultYears = isNeedToFetchYears.switchMap { it ->
+    val resultYears = isNeedToFetchYears.switchMap {
         if(it) {
             carRepository.getYears(brand,model)
+        } else AbsentLiveData.create()
+    }
+
+    val resultListOfCars = isNeedToFetchCars.switchMap {
+        if(it) {
+            carRepository.getCars(brand,model, year)
         } else AbsentLiveData.create()
     }
 

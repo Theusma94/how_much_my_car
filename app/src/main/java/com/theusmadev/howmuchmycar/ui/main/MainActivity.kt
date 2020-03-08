@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.theusmadev.howmuchmycar.R
 import com.theusmadev.howmuchmycar.BR
 import com.theusmadev.howmuchmycar.databinding.ActivityMainBinding
@@ -23,14 +25,22 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
 
     private lateinit var activityMainBinding: ActivityMainBinding
 
+    lateinit var adapter: CarListAdapter
+
     companion object {
         val TAG = MainActivity::class.java.simpleName
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = getViewDataBinding()
-        mainViewModel.startFetchBrands()
         setupObserver()
+        initializeRecyclerView()
+        mainViewModel.startFetchBrands()
+    }
+
+    private fun initializeRecyclerView() {
+        adapter = CarListAdapter()
+        activityMainBinding.carsList.adapter = adapter
     }
 
     private fun setupObserver() {
@@ -74,6 +84,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
                 NetworkState.ERROR -> {
                     Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
                 }
+            }
+        })
+        mainViewModel.resultListOfCars.observe(this, Observer {
+            it?.let {
+                adapter.submitList(it.data)
             }
         })
     }

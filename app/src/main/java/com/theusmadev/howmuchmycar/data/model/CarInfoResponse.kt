@@ -17,5 +17,11 @@ data class CarInfoResponse(
     var model: String,
 
     @SerializedName("modelYear")
-    var year: String
+    var year: String,
+
+    @SerializedName("version")
+    var version: String,
+
+    @SerializedName("versionId")
+    var versionId: String
 )

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="carInfoResponse"
+            type="com.theusmadev.howmuchmycar.data.model.CarInfoResponse" />
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="16dp"
+        app:contentPadding="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/brand_model_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{carInfoResponse.brand+'-'+carInfoResponse.model}"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Brand" />
+
+            <TextView
+                android:id="@+id/version_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{carInfoResponse.version}"
+                android:textStyle="bold"
+                android:layout_marginTop="6dp"
+                app:layout_constraintEnd_toEndOf="@+id/brand_model_label"
+                app:layout_constraintStart_toStartOf="@+id/brand_model_label"
+                app:layout_constraintTop_toBottomOf="@+id/brand_model_label"
+                tools:text="Version car" />
+
+            <TextView
+                android:id="@+id/car_info_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{String.valueOf(carInfoResponse.year)}"
+                android:layout_marginTop="6dp"
+                app:layout_constraintEnd_toEndOf="@+id/version_label"
+                app:layout_constraintStart_toStartOf="@+id/version_label"
+                app:layout_constraintTop_toBottomOf="@id/version_label"
+                tools:text="Year" />
+
+            <TextView
+                android:id="@+id/min_price_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Preço minimo:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/car_info_year"
+                />
+
+            <TextView
+                android:id="@+id/car_info_min_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:text="@{String.valueOf(carInfoResponse.precoMinimo)}"
+                app:layout_constraintStart_toEndOf="@+id/min_price_label"
+                app:layout_constraintTop_toBottomOf="@+id/car_info_year"
+                />
+
+            <TextView
+                android:id="@+id/max_price_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Preço maximo:"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/car_info_max_price"
+                app:layout_constraintTop_toBottomOf="@+id/car_info_year"
+                />
+
+            <TextView
+                android:id="@+id/car_info_max_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@{String.valueOf(carInfoResponse.precoMaximo)}"
+                app:layout_constraintTop_toBottomOf="@+id/car_info_year"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</layout>
