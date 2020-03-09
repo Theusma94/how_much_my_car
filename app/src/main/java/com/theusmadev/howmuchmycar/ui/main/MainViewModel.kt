@@ -8,39 +8,48 @@ import android.widget.TextView
 import androidx.lifecycle.*
 import com.theusmadev.howmuchmycar.data.remote.CarRepository
 import com.theusmadev.howmuchmycar.utils.AbsentLiveData
+import com.theusmadev.howmuchmycar.utils.SelectorHelper
 import javax.inject.Inject
-class MainViewModel @Inject constructor(val carRepository: CarRepository): ViewModel() {
+
+class MainViewModel @Inject constructor(
+    private val carRepository: CarRepository,
+    private val selectorHelper: SelectorHelper): ViewModel() {
 
     private val isNeedToFetchBrands: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchModels: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchYears: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchCars: MutableLiveData<Boolean> = MutableLiveData()
-    private var brand: String = ""
-    private var model: String = ""
-    private var year: String = ""
 
     fun setBrandSelected(brandSelected: View, position: Int, spinnerModels: Spinner,spinnerYears: Spinner ) {
         if(position > 0) {
             spinnerModels.adapter = null
             spinnerYears.adapter = null
-            brand = (brandSelected as TextView).text.toString()
+            selectorHelper.brandSelected  = (brandSelected as TextView).text.toString()
             startFetchModels()
+        } else {
+            selectorHelper.brandSelected = ""
         }
     }
     fun setModelSelected(modelSelected: View, position: Int) {
         if(position > 0) {
-            model = (modelSelected as TextView).text.toString()
+            selectorHelper.modelSelected = (modelSelected as TextView).text.toString()
             startFetchYears()
+        } else {
+            selectorHelper.modelSelected = ""
         }
     }
     fun setYearSelected(yearSelected: View, position: Int) {
         if(position > 0) {
-            year = (yearSelected as TextView).text.toString()
+            selectorHelper.yearSelected = (yearSelected as TextView).text.toString()
+        } else {
+            selectorHelper.yearSelected = ""
         }
     }
 
     fun onClickSearchButton() {
-        isNeedToFetchCars.value = true
+        if(selectorHelper.isReadyToFetchCars()) {
+            isNeedToFetchCars.value = true
+        } else {}
     }
 
     fun startFetchBrands() {
@@ -62,18 +71,18 @@ class MainViewModel @Inject constructor(val carRepository: CarRepository): ViewM
     }
     val resultModels = isNeedToFetchModels.switchMap {
         if(it) {
-            carRepository.getModels(brand)
+            carRepository.getModels()
         } else AbsentLiveData.create()
     }
     val resultYears = isNeedToFetchYears.switchMap {
         if(it) {
-            carRepository.getYears(brand,model)
+            carRepository.getYears()
         } else AbsentLiveData.create()
     }
 
     val resultListOfCars = isNeedToFetchCars.switchMap {
         if(it) {
-            carRepository.getCars(brand,model, year)
+            carRepository.getCars()
         } else AbsentLiveData.create()
     }
 

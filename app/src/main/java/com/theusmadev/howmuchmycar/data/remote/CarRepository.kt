@@ -6,11 +6,14 @@ import androidx.lifecycle.liveData
 import com.theusmadev.howmuchmycar.data.CarInfoService
 import com.theusmadev.howmuchmycar.data.model.*
 import com.theusmadev.howmuchmycar.utils.ResultFetch
+import com.theusmadev.howmuchmycar.utils.SelectorHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class CarRepository(private val carInfoService: CarInfoService) {
+class CarRepository(private val carInfoService: CarInfoService,
+                    private val selectorHelper: SelectorHelper) {
+
 
     fun getBrands(): LiveData<ResultFetch<BrandsResponse>> {
         return liveData {
@@ -36,20 +39,22 @@ class CarRepository(private val carInfoService: CarInfoService) {
         }
     }
 
-    fun getModels(brand: String): LiveData<ResultFetch<ModelResponse>> {
+    fun getModels(): LiveData<ResultFetch<ModelResponse>> {
         return liveData {
             emit(ResultFetch.loading(null))
             try {
-                emit(fetchModels(brand))
+                emit(fetchModels())
             } catch(exception: Exception) {
                 emit(ResultFetch.error(exception.message!!,null));
             }
         }
     }
 
-    private suspend fun fetchModels(brand: String): ResultFetch<ModelResponse> {
+    private suspend fun fetchModels(): ResultFetch<ModelResponse> {
         return try {
-            val response = withContext(Dispatchers.IO) {carInfoService.getModels(brand).execute() }
+            val response = withContext(Dispatchers.IO) {
+                carInfoService.getModels(selectorHelper.brandSelected).execute()
+            }
             if (response.isSuccessful) {
                 val modelResponse = ModelResponse()
                 modelResponse.items = response.body()
@@ -60,20 +65,20 @@ class CarRepository(private val carInfoService: CarInfoService) {
         }
     }
 
-    fun getYears(brand: String,model: String): LiveData<ResultFetch<YearsResponse>> {
+    fun getYears(): LiveData<ResultFetch<YearsResponse>> {
         return liveData {
             emit(ResultFetch.loading(null))
             try {
-                emit(fetchYears(brand,model))
+                emit(fetchYears())
             } catch(exception: Exception) {
                 emit(ResultFetch.error(exception.message!!,null));
             }
         }
     }
 
-    private suspend fun fetchYears(brand: String,model: String): ResultFetch<YearsResponse> {
+    private suspend fun fetchYears(): ResultFetch<YearsResponse> {
         return try {
-            val response = withContext(Dispatchers.IO) { carInfoService.getYears(brand,model).execute() }
+            val response = withContext(Dispatchers.IO) { carInfoService.getYears(selectorHelper.brandSelected,selectorHelper.modelSelected).execute() }
             if (response.isSuccessful) {
                 val yearsResponse = YearsResponse()
                 yearsResponse.items = response.body()
@@ -84,23 +89,28 @@ class CarRepository(private val carInfoService: CarInfoService) {
         }
     }
 
-    fun getCars(brand: String,model: String,year: String): LiveData<ResultFetch<List<CarInfoResponse>>> {
+    fun getCars(): LiveData<ResultFetch<List<CarInfoResponse>>> {
         return liveData {
             emit(ResultFetch.loading(null))
             try {
-                val versionsIds = fetchVersionsIds(brand,model,year)
-                emit(fetchCars(brand,model,year,versionsIds))
+                val versionsIds = fetchVersionsIds()
+                emit(fetchCars(versionsIds))
             } catch (exception: Exception) {
                 emit(ResultFetch.error(exception.message!!,null))
             }
         }
     }
 
-    private suspend fun fetchCars(brand: String, model: String, year: String,versionsIds: List<VersionIdResponse>?): ResultFetch<List<CarInfoResponse>> {
+    private suspend fun fetchCars(versionsIds: List<VersionIdResponse>?): ResultFetch<List<CarInfoResponse>> {
         val listOfCars = mutableListOf<CarInfoResponse>()
         return try {
             for(versionId in versionsIds!!) {
-                val response = withContext(Dispatchers.IO) { carInfoService.getCarInfos(brand,model,year,versionId.versionId).execute() }
+                val response = withContext(Dispatchers.IO) {
+                    carInfoService.getCarInfos(selectorHelper.brandSelected,
+                        selectorHelper.modelSelected,
+                        selectorHelper.yearSelected,
+                        versionId.versionId).execute()
+                }
                 if (response.isSuccessful) {
                     listOfCars.add(response.body()!!)
                 }
@@ -111,9 +121,14 @@ class CarRepository(private val carInfoService: CarInfoService) {
         }
     }
 
-    private suspend fun fetchVersionsIds(brand: String, model: String, year: String): List<VersionIdResponse>? {
+    private suspend fun fetchVersionsIds(): List<VersionIdResponse>? {
         return try {
-            val response = withContext(Dispatchers.IO) { carInfoService.getVersionsIDs(brand, model, year).execute() }
+            val response = withContext(Dispatchers.IO) {
+                carInfoService.getVersionsIDs(
+                    selectorHelper.brandSelected,
+                    selectorHelper.modelSelected,
+                    selectorHelper.yearSelected).execute()
+            }
             if(response.isSuccessful) {
                 response.body()
             } else throw IOException()

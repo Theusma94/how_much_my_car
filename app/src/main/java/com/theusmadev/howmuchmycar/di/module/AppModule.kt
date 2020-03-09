@@ -7,6 +7,7 @@ import com.theusmadev.howmuchmycar.data.remote.CarRepository
 import com.theusmadev.howmuchmycar.di.factory.ViewModelFactoryModule
 import com.theusmadev.howmuchmycar.utils.RetrofitUtils.generateOkHttpClientBuilder
 import com.theusmadev.howmuchmycar.utils.RetrofitUtils.generateRetrofitBuilder
+import com.theusmadev.howmuchmycar.utils.SelectorHelper
 import dagger.Module
 import dagger.Provides
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 class AppModule {
 
     companion object {
-        val baseUrl = "https://volanty-price-api.herokuapp.com/"
+        const val baseUrl = "https://volanty-price-api.herokuapp.com/"
     }
 
     @Provides
@@ -35,8 +36,11 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesCarRepository(carInfoService: CarInfoService) = CarRepository(carInfoService)
+    fun providesSelectorHelper() = SelectorHelper()
 
+    @Provides
+    @Singleton
+    fun providesCarRepository(carInfoService: CarInfoService,selectorHelper: SelectorHelper) = CarRepository(carInfoService,selectorHelper)
 
 
 }

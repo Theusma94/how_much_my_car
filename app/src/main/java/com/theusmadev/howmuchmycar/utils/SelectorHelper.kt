@@ -1,14 +1,19 @@
 package com.theusmadev.howmuchmycar.utils
 
-object SelectorHelper {
-
-    var brandSelected: String = ""
-    var modelSelected: String = ""
+data class SelectorHelper(
+    var brandSelected: String = "",
+    var modelSelected: String = "",
     var yearSelected: String = ""
+) {
+    fun isReadyToFetchCars(): Boolean {
+        return !(brandSelected.isEmpty() ||
+                modelSelected.isEmpty() ||
+                yearSelected.isEmpty())
+    }
 
-    var brandsAfterFetch: List<String>? = mutableListOf()
-    var modelsAfterFetch: Map<String,List<String>> = mutableMapOf()
-    var yearsAfterFetch: Map<String,List<String>> = mutableMapOf()
-
-
+    fun clearAllFields() {
+        brandSelected = ""
+        modelSelected = ""
+        yearSelected = ""
+    }
 }
