@@ -20,6 +20,9 @@ class MainViewModel @Inject constructor(
     private val isNeedToFetchYears: MutableLiveData<Boolean> = MutableLiveData()
     private val isNeedToFetchCars: MutableLiveData<Boolean> = MutableLiveData()
 
+    private val missedSelectFields: MutableLiveData<Boolean> = MutableLiveData()
+    fun getMissedSelectFields(): LiveData<Boolean> = missedSelectFields
+
     fun setBrandSelected(brandSelected: View, position: Int, spinnerModels: Spinner,spinnerYears: Spinner ) {
         if(position > 0) {
             spinnerModels.adapter = null
@@ -49,7 +52,9 @@ class MainViewModel @Inject constructor(
     fun onClickSearchButton() {
         if(selectorHelper.isReadyToFetchCars()) {
             isNeedToFetchCars.value = true
-        } else {}
+        } else {
+            missedSelectFields.value = true
+        }
     }
 
     fun startFetchBrands() {

@@ -91,6 +91,12 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
                 adapter.submitList(it.data)
             }
         })
+
+        mainViewModel.getMissedSelectFields().observe(this, Observer {
+            if(it) {
+                Toast.makeText(this, "Necessário selecionar todos os itens",Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun getLayoutId(): Int = R.layout.activity_main
