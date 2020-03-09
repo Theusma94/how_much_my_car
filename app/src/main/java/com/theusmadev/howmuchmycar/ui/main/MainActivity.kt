@@ -47,11 +47,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         mainViewModel.resultBrands.observe(this, Observer {
             when(it.status) {
                     NetworkState.SUCCESS -> {
-                        activityMainBinding.brands = it.data?.items?.insertOnStart("Select a Brand")
+                        activityMainBinding.brands = it.data?.items?.insertOnStart("Selecione a marca")
                         activityMainBinding.spinnerModels.setSelection(0)
                     }
                     NetworkState.LOADING -> {
-                        Toast.makeText(this, "Loading Brands", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Carregando marcas", Toast.LENGTH_LONG).show()
                     }
                     NetworkState.ERROR -> {
                         Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
@@ -61,11 +61,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         mainViewModel.resultModels.observe(this, Observer {
             when(it.status) {
                 NetworkState.SUCCESS -> {
-                    activityMainBinding.models = it.data?.items?.insertOnStart("Select a Model")
+                    activityMainBinding.models = it.data?.items?.insertOnStart("Selecione o modelo")
                     activityMainBinding.spinnerModels.setSelection(0)
                 }
                 NetworkState.LOADING -> {
-                    Toast.makeText(this, "Loading Models", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Carregando modelos", Toast.LENGTH_LONG).show()
                 }
                 NetworkState.ERROR -> {
                     Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
@@ -75,11 +75,11 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
         mainViewModel.resultYears.observe(this, Observer {
             when(it.status) {
                 NetworkState.SUCCESS -> {
-                    activityMainBinding.years = it.data?.items?.insertOnStart("Select a year")
+                    activityMainBinding.years = it.data?.items?.insertOnStart("Selecione o ano")
                     activityMainBinding.spinnerYears.setSelection(0)
                 }
                 NetworkState.LOADING -> {
-                    Toast.makeText(this, "Loading Years", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Carregando anos", Toast.LENGTH_LONG).show()
                 }
                 NetworkState.ERROR -> {
                     Toast.makeText(this,it.message,Toast.LENGTH_LONG).show()
